@@ -21,6 +21,15 @@ def _to_int(value: str, default: int = 0) -> int:
         return default
 
 
+def _place_type_priority(place_type: str) -> int:
+    normalized = (place_type or "").strip().lower()
+    if normalized == "budget":
+        return 0
+    if normalized == "paid":
+        return 1
+    return 2
+
+
 def _build_rankings(applications: list[dict]) -> tuple[dict[str, list[str]], dict[str, dict[str, int]]]:
     grouped_rows: dict[str, list[dict]] = defaultdict(list)
     for row in applications:
@@ -124,6 +133,7 @@ def compute_admission(
         sorted_rows = sorted(
             rows,
             key=lambda item: (
+                _place_type_priority(item.get("place_type", "")),
                 _to_int(item["priority"], default=999),
                 _to_int(item["rank_position"], default=10**9),
                 item["group_id"],
