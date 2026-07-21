@@ -42,6 +42,13 @@ def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str
         tr_html: list[str] = []
         for row in sorted_rows:
             status = _status_class(row["status"])
+            assigned_group = row.get("assigned_contest_group", "")
+            assigned_place_type = row.get("assigned_place_type", "")
+            if assigned_group:
+                assigned_place_label = "Бюджет" if assigned_place_type == "budget" else "Платно"
+                assigned_display = f"{assigned_group} ({assigned_place_label})"
+            else:
+                assigned_display = ""
             tr_html.append(
                 "".join(
                     [
@@ -52,7 +59,7 @@ def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str
                         f"<td>{_escape(str(row['priority']))}</td>",
                         f"<td>{_escape(str(row['score']))}</td>",
                         f"<td>{_escape(STATUS_LABELS.get(status, status))}</td>",
-                        f"<td>{_escape(row['assigned_contest_group'])}</td>",
+                        f"<td>{_escape(assigned_display)}</td>",
                         "</tr>",
                     ]
                 )
