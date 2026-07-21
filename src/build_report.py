@@ -15,8 +15,8 @@ except ImportError:  # pragma: no cover - for direct script execution
 STATUS_LABELS = {
     "green": "Проходит сюда",
     "yellow": "Проходит по конкурсу, но закреплён в более высоком приоритете",
-    "red": "Не проходит сюда, но проходит в другое направление",
-    "gray": "Совсем никуда не проходит",
+    "orange": "Не проходит сюда, но проходит в другое направление",
+    "red": "Никуда не проходит",
 }
 
 
@@ -25,7 +25,7 @@ def _escape(text: str) -> str:
 
 
 def _status_class(value: str) -> str:
-    return value if value in {"green", "yellow", "red", "gray"} else "gray"
+    return value if value in {"green", "yellow", "orange", "red"} else "red"
 
 
 def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str) -> str:
@@ -96,8 +96,8 @@ def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str
     .badge {{ padding: 6px 10px; border-radius: 8px; font-size: 14px; }}
     .green {{ background: #dcfce7; }}
     .yellow {{ background: #fef9c3; }}
+    .orange {{ background: #ffedd5; }}
     .red {{ background: #fee2e2; }}
-    .gray {{ background: #e5e7eb; }}
     .search-box {{ margin-bottom: 20px; }}
     input {{ padding: 8px; min-width: 280px; }}
     #searchResult {{ margin-top: 8px; font-weight: 600; }}
@@ -106,8 +106,8 @@ def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str
     th {{ background: #f8fafc; }}
     tr.status-green td {{ background: #f0fdf4; }}
     tr.status-yellow td {{ background: #fefce8; }}
+    tr.status-orange td {{ background: #fff7ed; }}
     tr.status-red td {{ background: #fef2f2; }}
-    tr.status-gray td {{ background: #f3f4f6; }}
   </style>
 </head>
 <body>
@@ -124,8 +124,8 @@ def _build_html(by_direction: list[dict], by_code: list[dict], generated_at: str
   <div class="legend">
     <span class="badge green">Зелёный: проходит сюда</span>
     <span class="badge yellow">Жёлтый: проходит в рейтинге, но закреплён выше по приоритету</span>
-    <span class="badge red">Красный: не проходит сюда, но проходит в другое направление</span>
-    <span class="badge gray">Серый: совсем никуда не проходит</span>
+    <span class="badge orange">Оранжевый: не проходит сюда, но проходит в другое направление</span>
+    <span class="badge red">Красный: совсем никуда не проходит</span>
   </div>
 
   {''.join(sections)}

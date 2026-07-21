@@ -138,7 +138,7 @@ def compute_admission(
     for group_id, ordered_codes in ranking_lists.items():
         cutoff_codes[group_id] = set(ordered_codes[: capacities.get(group_id, 0)])
 
-    # For yellow/red split we use an "effective queue":
+    # For yellow/orange split we use an "effective queue":
     # candidates assigned to other groups do not occupy seats here.
     removed_prefix_by_group: dict[str, list[int]] = {}
     ranks_by_group = group_ranks
@@ -174,9 +174,9 @@ def compute_admission(
             if effective_rank < capacities.get(gid, 0):
                 status = "yellow"
             else:
-                status = "red"
+                status = "orange"
         else:
-            status = "gray"
+            status = "red"
 
         by_direction_rows.append(
             {
@@ -213,6 +213,7 @@ def compute_admission(
                 "assigned_document_type": selected["document_type"] if selected else "",
                 "green_count": sum(1 for row in rows if row["status"] == "green"),
                 "yellow_count": sum(1 for row in rows if row["status"] == "yellow"),
+                "orange_count": sum(1 for row in rows if row["status"] == "orange"),
                 "red_count": sum(1 for row in rows if row["status"] == "red"),
                 "best_priority": min(_to_int(row["priority"], default=999) for row in rows),
             }
@@ -250,6 +251,7 @@ def compute_admission(
             "assigned_document_type",
             "green_count",
             "yellow_count",
+            "orange_count",
             "red_count",
             "best_priority",
         ],
