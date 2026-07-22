@@ -5,6 +5,12 @@ on:
     - cron: "*/30 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+env:
+  AUTO_UPDATE_BRANCH: auto-update-report
+
 jobs:
   build-report:
     runs-on: ubuntu-latest
@@ -25,8 +31,11 @@ jobs:
       - name: Run pipeline
         run: python src/run_pipeline.py
 
-      - name: Commit report artifacts
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Publish report branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          commit_message: "chore: update phd-admission-monitor report"
-          file_pattern: data reports logs
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: ${{ env.AUTO_UPDATE_BRANCH }}
+          publish_dir: ./reports
+          force_orphan: true
+          commit_message: "chore: update admission report"
