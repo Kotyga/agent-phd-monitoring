@@ -6,10 +6,26 @@ import re
 from pathlib import Path
 
 try:
-    from .common import NORMALIZED_DIR, RAW_DIR, ensure_runtime_dirs, utc_now_iso, write_csv
+    from .common import (
+        NORMALIZED_DIR,
+        RAW_DIR,
+        ensure_runtime_dirs,
+        normalize_contest_group,
+        read_csv,
+        utc_now_iso,
+        write_csv,
+    )
     from .html_table import parse_tables
 except ImportError:  # pragma: no cover - for direct script execution
-    from common import NORMALIZED_DIR, RAW_DIR, ensure_runtime_dirs, utc_now_iso, write_csv
+    from common import (
+        NORMALIZED_DIR,
+        RAW_DIR,
+        ensure_runtime_dirs,
+        normalize_contest_group,
+        read_csv,
+        utc_now_iso,
+        write_csv,
+    )
     from html_table import parse_tables
 
 
@@ -206,10 +222,23 @@ def _extract_rows_regex(html_text: str, source_url: str, snapshot_time: str) -> 
     return records
 
 
-def parse_applicants(manifest_path: Path = RAW_DIR / "manifest.json") -> Path:
+def _normalize_applicant_rows(rows: list[dict], places_rows: list[dict]) -> None:
+    for row in rows:
+        row["contest_group"] = normalize_contest_group(
+            row["contest_group"],
+            row["place_type"],
+            places_rows,
+        )
+
+
+def parse_applicants(
+    manifest_path: Path = RAW_DIR / "manifest.json",
+    places_path: Path = NORMALIZED_DIR / "places.csv",
+) -> Path:
     ensure_runtime_dirs()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     snapshot_time = manifest.get("fetched_at", utc_now_iso())
+    places_rows = read_csv(places_path) if places_path.exists() else []
     rows: list[dict] = []
 
     for source in manifest.get("sources", []):
@@ -238,6 +267,9 @@ def parse_applicants(manifest_path: Path = RAW_DIR / "manifest.json") -> Path:
                 snapshot_time=snapshot_time,
             )
         rows.extend(page_rows)
+
+    if places_rows:
+        _normalize_applicant_rows(rows, places_rows)
 
     # Keep best line per (code, group, place type): best rank, then highest score.
     deduped: dict[tuple[str, str, str], dict] = {}

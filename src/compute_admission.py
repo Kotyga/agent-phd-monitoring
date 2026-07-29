@@ -5,9 +5,23 @@ from collections import defaultdict, deque
 from pathlib import Path
 
 try:
-    from .common import NORMALIZED_DIR, RESULTS_DIR, ensure_runtime_dirs, read_csv, write_csv
+    from .common import (
+        NORMALIZED_DIR,
+        RESULTS_DIR,
+        ensure_runtime_dirs,
+        normalize_contest_group,
+        read_csv,
+        write_csv,
+    )
 except ImportError:  # pragma: no cover - for direct script execution
-    from common import NORMALIZED_DIR, RESULTS_DIR, ensure_runtime_dirs, read_csv, write_csv
+    from common import (
+        NORMALIZED_DIR,
+        RESULTS_DIR,
+        ensure_runtime_dirs,
+        normalize_contest_group,
+        read_csv,
+        write_csv,
+    )
 
 
 def _group_id(contest_group: str, place_type: str) -> str:
@@ -118,10 +132,16 @@ def compute_admission(
 
     applications: list[dict] = []
     for row in applicants_rows:
-        gid = _group_id(row["contest_group"], row["place_type"])
+        contest_group = normalize_contest_group(
+            row["contest_group"],
+            row["place_type"],
+            places_rows,
+        )
+        gid = _group_id(contest_group, row["place_type"])
         if gid not in capacities:
             continue
         item = dict(row)
+        item["contest_group"] = contest_group
         item["group_id"] = gid
         applications.append(item)
 
