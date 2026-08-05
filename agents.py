@@ -29,7 +29,7 @@ async def main():
         'mcp': {
             'transport': 'stdio',
             'command': sys.executable,
-            'args': ['./phd-admission-monitor-master/mcp_mipt.py']
+            'args': ['./agent-phd-monitoring/mcp_mipt.py']
         }
     }
 
