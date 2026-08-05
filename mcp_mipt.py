@@ -10,15 +10,15 @@ from typing import Any
 mcp = FastMCP('mipt-phd')
 
 FILE_PATH_EXCEL = Path(
-    "./phd-admission-monitor-master/reports/admission_snapshot.xlsx"
+    "./agent-phd-monitoring/reports/admission_snapshot.xlsx"
 )
 
 FILE_PATH_HTML = Path(
-    "./phd-admission-monitor-master/reports/index.html"
+    "./agent-phd-monitoring/reports/index.html"
 )
 
 FILE_PATH_MD = Path(
-    "./phd-admission-monitor-master/reports/md"
+    "./agent-phd-monitoring/reports/md"
 )
 
 @mcp.tool()
@@ -350,10 +350,10 @@ def get_phd_snapshot():
 
     В результате работы обновляются файлы:
 
-    - `./phd-admission-monitor-master/reports/admission_snapshot.xlsx`
+    - `./agent-phd-monitoring/reports/admission_snapshot.xlsx`
       — Excel-снимок конкурсных списков и рассчитанных статусов поступления;
 
-    - `./phd-admission-monitor-master/reports/index.html`
+    - `./agent-phd-monitoring/reports/index.html`
       — HTML-отчёт с возможностью поиска абитуриента по уникальному коду.
 
     Снимок не является накопительным: при каждом запуске предыдущие версии
